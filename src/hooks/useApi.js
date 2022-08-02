@@ -9,7 +9,7 @@ export const useApi = ( API ) => {
         axios.get( API)
         .then( res => setProducts( res.data.data.products))
 }, [API]);
-
+  
  return { products, setProducts };
 
 }

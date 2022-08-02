@@ -3,14 +3,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { filterCategory } from "../store/slices/products.slice";
+import { useStateContext } from "../context/StateContext";
 
 const ProductPage = () => {
 
     const [products, setProducts] = useState({});
-
     const { id } = useParams();
     const dispatch = useDispatch();
     const [value, setValue] = useState(0);
+    const { increaseQuantity, quantity, addToCart } = useStateContext();
+
 
     useEffect(() => {
         axios.get("https://ecommerce-api-react.herokuapp.com/api/v1/products").then((res) => {
@@ -21,7 +23,7 @@ const ProductPage = () => {
             dispatch(filterCategory(res.data.data.products.id));
         });
     }, [dispatch, id]);
-
+    
     return (
         <>
             <div className="page-title-overlap bg-dark pt-4">
@@ -32,7 +34,7 @@ const ProductPage = () => {
                                 <li className="breadcrumb-item"><a className="text-nowrap" href="index.html"><i className="ci-home"></i>Home</a></li>
                                 <li className="breadcrumb-item text-nowrap"><a href="/#">Shop</a>
                                 </li>
-                                <li className="breadcrumb-item text-nowrap active" aria-current="page">Product Page v.2</li>
+                                <li className="breadcrumb-item text-nowrap active" aria-current="page">{products.title}</li>
                             </ol>
                         </nav>
                     </div>
@@ -59,30 +61,48 @@ const ProductPage = () => {
                                     <div className="col-lg-7 pe-lg-0">
                                         <div className="product-gallery">
                                             <div className="product-gallery-preview order-sm-2">
-                                            
-                                                <div className="product-gallery-preview-item active" id="first"><img className="image-zoom" src={products.productImgs?.[value]}  data-zoom={products.productImgs?.[value]} alt="Product image" />
+
+                                                <div className="product-gallery-preview-item active" id="first"><img className="image-zoom" src={products.productImgs?.[value]} data-zoom={products.productImgs?.[value]} alt="Product image" />
                                                     <div className="image-zoom-pane"></div>
                                                 </div>
-                                             
+
                                             </div>
-                                            <div className="product-gallery-thumblist order-sm-1"><a className="product-gallery-thumblist-item active" href="#first"><img src={products.productImgs?.[0]} alt="Product thumb" /></a><a className="product-gallery-thumblist-item" href="#second"><img src={products.productImgs?.[1]} alt="Product thumb" /></a><a className="product-gallery-thumblist-item" href="#third"><img src={products.productImgs?.[2]} alt="Product thumb" /></a><a className="product-gallery-thumblist-item" href="#fourth"><img src={products.productImgs} alt="Product thumb" /></a><a className="product-gallery-thumblist-item video-item" href="https://www.youtube.com/watch?v=nrQevwouWn0">
-                                            <div className="product-gallery-thumblist-item-text"><i className="ci-video"></i>Video</div></a></div>
+                                            <div className="product-gallery-thumblist order-sm-1">
+                                                <a className="product-gallery-thumblist-item active" onClick={() => setValue(0)}>
+                                                    <img src={products.productImgs?.[0]} alt="Product thumb" />
+                                                </a><a className="product-gallery-thumblist-item" onClick={() => setValue(1)}>
+                                                    <img src={products.productImgs?.[1]} alt="Product thumb" />
+                                                </a>
+                                                <a className="product-gallery-thumblist-item" onClick={() => setValue(2)}>
+                                                    <img src={products.productImgs?.[2]} alt="Product thumb" />
+                                                </a>
+                                                <a className="product-gallery-thumblist-item" onClick={() => setValue(0)}>
+                                                    <img src={products.productImgs} alt="Product thumb" />
+                                                </a>
+                                                <a className="product-gallery-thumblist-item video-item">
+                                                    <div className="product-gallery-thumblist-item-text">
+                                                        <i className="ci-video">
+                                                        </i>
+                                                        Video
+                                                        </div>
+                                                </a>
                                             </div>
-                    
+                                        </div>
+
                                     </div>
 
                                     <div className="col-lg-5 pt-4 pt-lg-0">
                                         <div className="product-details ms-auto pb-3">
-                                            <div className="h3 fw-normal text-accent mb-3 me-1">${products.price}.<small>99</small></div>
+                                            <div className="h3 fw-normal text-accent mb-3 me-1">${products.price}</div>
                                             <div className="d-flex align-items-center pt-2 pb-4">
                                                 <select className="form-select me-3" style={{ width: '5rem' }}>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
+                                                    <option value="1" >1</option>
+                                                    <option value="2" >2</option>
+                                                    <option value="3" >3</option>
+                                                    <option value="4" >4</option>
                                                     <option value="5">5</option>
                                                 </select>
-                                                <button className="btn btn-primary btn-shadow d-block w-100" type="button"><i className="ci-cart fs-lg me-2"></i>Add to Cart</button>
+                                                <button className="btn btn-primary btn-shadow d-block w-100" type="button" onClick={() => addToCart(products, quantity)}><i className="ci-cart fs-lg me-2"></i>Add to Cart</button>
                                             </div>
                                             <div className="d-flex mb-4">
                                                 <div className="w-100 me-3">
@@ -425,7 +445,7 @@ const ProductPage = () => {
                     </div>
                 </div>
             </div>
-            
+
         </>
     )
 
